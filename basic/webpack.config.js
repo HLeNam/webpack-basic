@@ -1,11 +1,28 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 module.exports = (env) => {
     const isDevelopment = Boolean(env.development);
     // nodejs way
     // const isDevelopment = process.env.NODE_ENV !== "production"; // Alternatively, you can use this to determine the environment
+
+    const plugins = [
+        new MiniCssExtractPlugin({
+            filename: "[name].[contenthash].css", // Use contenthash for cache busting
+        }),
+        new HtmlWebpackPlugin({
+            title: "Webpack App",
+            filename: "index.html",
+            template: path.resolve(__dirname, "src", "template.html"),
+            inject: "body", // Chèn script vào cuối body
+        }),
+    ];
+
+    if (!isDevelopment) {
+        plugins.push(new BundleAnalyzerPlugin());
+    }
 
     return {
         // mode: "development",
@@ -61,17 +78,7 @@ module.exports = (env) => {
             ],
         },
 
-        plugins: [
-            new MiniCssExtractPlugin({
-                filename: "[name].[contenthash].css", // Use contenthash for cache busting
-            }),
-            new HtmlWebpackPlugin({
-                title: "Webpack App",
-                filename: "index.html",
-                template: path.resolve(__dirname, "src", "template.html"),
-                inject: "body", // Chèn script vào cuối body
-            }),
-        ],
+        plugins: plugins,
 
         devServer: {
             static: {
