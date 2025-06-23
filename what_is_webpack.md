@@ -243,3 +243,75 @@ module.exports = {
     ],
 };
 ```
+
+## Tạo một server bang webpack để dev
+
+-   Hiện tại chúng ta đang dùng Live Server trên VS code để tự động reload lại trang web. Webpack cung cấp sẵn cho chúng ta tính năng tạo một server localhost không cần dùng đến extension VS code.
+-   Để sử dụng thì chúng ta cài `webpack-dev-server`: `yarn add webpack-dev-server -D` (hoặc `npm install webpack-dev-server --save-dev`)
+-   Thêm script sau vào `package.json`: `"start": "webpack serve"`
+
+### Lưu ý
+
+-   `webpack-dev-server` cần `html-webpack-plugin` để hoạt động được.
+-   `webpack-dev-server` sẽ lưu các tạm các file của bạn vào RAM, vì thế bạn sẽ không thấy chúng ở trong thư mục build (`dist`)
+
+**`webpack.config.js`**
+
+```js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+    mode: "production",
+    entry: {
+        app: path.resolve("src/index.js"),
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "[name].[contenthash].js",
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader
+                    "css-loader",
+                ],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,"css-loader", "sass-loader"
+                ],
+            },
+        ],
+    },
+
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: "[name].[contenthash].css",
+        }),
+        new HtmlWebpackPlugin({
+            title: "Webpack App",
+            template: path.resolve(__dirname, "src/index.html"),
+            filename: "index.html",
+            inject: "body", // Chèn script vào cuối body
+        }),
+    ],
+
+    devServer: {
+        static: {
+            directory: path.join(__dirname, "dist"),
+        },
+        port: 3000, // Cổng mà server sẽ chạy
+        open: true, // Mở trang webpack khi chạy terminal
+        hot: true, // Bật tính năng reload nhanh Host Module Replacement
+        compress: true, // Nén các file để giảm băng thông (gzip)
+        historyApiFallback: true, // Cho phép sử dụng HTML5 History API (để hỗ trợ các route không phải là file tĩnh) (nếu dùng Single Page Application)
+    },
+};
+```

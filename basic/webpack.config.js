@@ -39,4 +39,15 @@ module.exports = {
             inject: "body", // Chèn script vào cuối body
         }),
     ],
+
+    devServer: {
+        static: {
+            directory: path.join(__dirname, "dist"),
+        },
+        port: 3000, // Cổng mà server sẽ chạy
+        open: true, // Mở trang webpack khi chạy terminal
+        hot: true, // Bật tính năng reload nhanh Host Module Replacement
+        compress: true, // Nén các file để giảm băng thông (gzip)
+        historyApiFallback: true, // Cho phép sử dụng HTML5 History API (để hỗ trợ các route không phải là file tĩnh) (nếu dùng Single Page Application)
+    },
 };
