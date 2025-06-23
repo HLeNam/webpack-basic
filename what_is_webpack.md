@@ -1,0 +1,75 @@
+# Webpack
+
+## Webpack là gì?
+
+-   Webpack là một tool chạy trên môi trường NodeJs giúp chúng ta đóng gói các file js, css, sass,
+    jpg ... Ngoài ra webpack còn giúp chúng ta tạo một server ảo để thuận tiện cho việc code.
+
+## Cài `webpack` và `webpack-cli`
+
+-   Chúng ta cài vào trong devDependencies vì tool này chỉ chạy trong lúc chúng ta dev
+-   `webpack-cli` có 2 chế độ cài là **global** và **local**. Mình khuyên các bạn cài `local` cho dễ quản lý.
+-   Chạy câu lệnh:
+    -   `yarn add webpack webpack-cli -D` để cài
+    -   hoặc `npm install webpack webpack-cli --save-dev` để cài
+-   Mở file `package.json` lên để thêm dòng `"build"`: `"webpack"` vào trong `script`
+-   Mặc định thì `webpack` sẽ sử dụng thư mục `dist` để chứa những file sau khi build và sử dụng
+    `src/index.js` để chứa file **entry** (file đầu vào tổng) của dự án. Muốn custom thư mục khác hoặc cấu
+    hình sâu hơn thì phải tạo file config là `webpack.config.js`.
+-   Webpack sẽ tự nhận diện file `webpack.config.js` và lấy những config trong đó. Nếu bạn tạo tên file
+    khác `webpack.confi1.js` thì phải khai báo nó trong đoạn script của `package.json` để webpack biết.
+
+**`webpack.config.js`**
+
+```js
+const path = require("path");
+module.exports = {
+    mode: "development",
+    entry: {
+        app: path.resolve("src/index.js"),
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+    },
+};
+```
+
+## Sử dụng các Loaders và biên dịch SASS
+
+-   Nếu muốn dùng css trong webpack thì bạn phải cài `style-loader` và `css-loader`.
+-   Chạy câu lệnh `yarn add style-loader css-loader -D` (hoặc `npm install style-loader css-loader --save-dev`) để cài.
+-   Muốn dùng thêm sass thì phải cài thêm `sass` và `sass-loader`.
+-   Chạy câu lệnh `yarn add sass sass-loader -D` (hoặc `npm install sass sass-loader --save-dev`) để cài.
+-   Sau khi build và chạy thì chúng ta sẽ thấy thẻ `<style>` được Javascript thao tác DOM vào trong file `index.html`. Nếu các bạn muốn file css nằm riêng biệt thì xem ở bước tiếp theo nhé.
+
+**`webpack.config.js`**
+
+```js
+const path = require("path");
+
+module.exports = {
+    mode: "production",
+    entry: {
+        app: path.resolve("src/index.js"),
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "[name].js",
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: ["style-loader", "css-loader"],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: ["style-loader", "css-loader", "sass-loader"],
+            },
+        ],
+    },
+};
+```
