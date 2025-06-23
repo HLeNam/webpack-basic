@@ -12,7 +12,7 @@ module.exports = {
     output: {
         path: path.resolve(__dirname, "dist"),
         // filename: "bundle.js",
-        filename: "[name].js", // This would allow multiple entry points to be bundled into separate files
+        filename: "[name].[contenthash].js", // This would allow multiple entry points to be bundled into separate files
     },
 
     module: {
@@ -29,7 +29,9 @@ module.exports = {
     },
 
     plugins: [
-        new MiniCssExtractPlugin(),
+        new MiniCssExtractPlugin({
+            filename: "[name].[contenthash].css", // Use contenthash for cache busting
+        }),
         new HtmlWebpackPlugin({
             title: "Webpack App",
             filename: "index.html",

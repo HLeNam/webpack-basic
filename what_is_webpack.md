@@ -2,8 +2,7 @@
 
 ## Webpack là gì?
 
--   Webpack là một tool chạy trên môi trường NodeJs giúp chúng ta đóng gói các file js, css, sass,
-    jpg ... Ngoài ra webpack còn giúp chúng ta tạo một server ảo để thuận tiện cho việc code.
+-   Webpack là một tool chạy trên môi trường NodeJs giúp chúng ta đóng gói các file js, css, sass, jpg ... Ngoài ra webpack còn giúp chúng ta tạo một server ảo để thuận tiện cho việc code.
 
 ## Cài `webpack` và `webpack-cli`
 
@@ -177,6 +176,64 @@ module.exports = {
     },
 
     plugins: [
+        new MiniCssExtractPlugin({
+            filename: "[name].css",
+        }),
+        new HtmlWebpackPlugin({
+            title: "Webpack App",
+            template: path.resolve(__dirname, "src/index.html"),
+            filename: "index.html",
+            inject: "body", // Chèn script vào cuối body
+        }),
+    ],
+};
+```
+
+## Xử lý caching ở trình duyệt bằng hash name file
+
+-   Hiện tại những file css hay js sau khi build đều có 1 cái tên cố định, điều này dẫn đến trình duyệt hoặc server sẽ thực hiện caching. Caching là tốt, điều này giúp cho web chúng ta load nhanh hơn nhưng nó không đúng với ngữ cảnh hiện tại. Chúng ta thường build lại webpack khi có một cập nhật mới gì đó trên website và chúng ta muốn người dùng sẽ thấy ngay lập tức bản cập nhật này. Vì thế chúng ta cần phải xử lý caching.
+-   Cách xử lý dễ nhất là mỗi lần build webpack chúng ta lại tạo ra một tên file mới. Webpack cho phép chúng ta chỉnh sửa điều này trong `output.filename` bằng `[contenthash]`
+
+**`webpack.config.js`**
+
+```js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+    mode: "production",
+    entry: {
+        app: path.resolve("src/index.js"),
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "[name].[contenthash].js",
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader
+                    "css-loader",
+                ],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,"css-loader", "sass-loader"
+                ],
+            },
+        ],
+    },
+
+    plugins: [
+        new MiniCssExtractPlugin({
+            filename: "[name].[contenthash].css",
+        }),
         new HtmlWebpackPlugin({
             title: "Webpack App",
             template: path.resolve(__dirname, "src/index.html"),
