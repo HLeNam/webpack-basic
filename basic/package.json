@@ -5,7 +5,9 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "webpack",
-        "start": "webpack serve"
+        "start": "webpack serve --env development",
+        "start-window": "SET NODE_ENV=development&webpack serve",
+        "start-linux": "NODE_ENV=development webpack serve"
     },
     "author": "",
     "license": "ISC",

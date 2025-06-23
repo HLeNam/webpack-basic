@@ -325,6 +325,9 @@ module.exports = {
 -   Thêm `devtool: 'source-map'` để có `source-map` đẩy đủ tiện lợi cho môi trường dev.
 -   `source-map` sẽ làm chậm tiến trinh build và rebuild.
 -   Ngoài `source-map` ra thì còn có các giá trị khác như `eval`, `eval-cheap-source-map`, ... tuy thuộc vào mục đích sử dụng.
+-   **Khuyên dùng**: Chỉ nên để `source-map` khi dev, khi build ra production thì hãy disable nó đi vì `source-map` sẽ làm lộ mã nguồn cũng như là tăng kích thước các file build.
+-   Webpack nhận các biến môi trường thông qua `-- env` trong câu lệnh script khi chạy webpack. Vì thế bạn hãy thêm `"start": "webpack serve -- env development"` trong script của `package.json` để truyền `development = true` vào webpack. `module.exports` ở file `webpack.config.js` ngoài bang một object thì nó còn có thể là một function với tham số là biến object môi trường env.
+-   Bạn cũng có thể truyền biến môi trường vào webpack thông qua `process.env` của NodeJs. Nếu máy windows thì `"start": "SET NODE_ENV=production&webpack serve"`, con Linux thì `"start": "NODE_ENV=production webpack serve"`. Bên file `webpack.config.js` bạn có thể lấy giá trị của `NODE_ENV` bằng `process.env.NODE_ENV`.
 
 **`webpack.config.js`**
 
@@ -346,6 +349,8 @@ module.exports = {
         filename: "[name].[contenthash].js", // This would allow multiple entry points to be bundled into separate files
         clean: true, // Clean the output directory before emit
     },
+
+    devtool: process.env.NODE_ENV === "production" ? false : "source-map", // Use source-map only in development mode
 
     module: {
         rules: [
