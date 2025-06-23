@@ -120,3 +120,69 @@ module.exports = {
     ],
 };
 ```
+
+## Tách CSS ra những file riêng
+
+-   Hiện tại thì CSS đang được chèn vào trong file `index.html` thông qua thẻ `<style>`. Điều này không tốt vì khi chúng ta có nhiều file css thì sẽ làm tăng kích thước của file js.
+
+## Vấn đề khi chèn style bằng JS
+
+-   Vấn đề hiện tại là CSS đang được JS DOM vào nên xảy ra tình trạng "chớp trắng" khi mới load trang.
+-   Tăng size file JS lên rất nhiều
+
+## Cách fix
+
+-   Dùng `mini-css-extract-plugin` để tách nó ra thành những file riêng
+-   Chạy câu lệnh `yarn add mini-css-extract-plugin -D` (hoặc `npm install mini-css-extract-plugin --save-dev`) để cài
+
+## Lưu ý:
+
+-   Hãy đảm bảo bạn đã cài và đang dùng plugin `html-webpack-plugin` , vì nó cần plugin này để tự động generate ra the `<link>` trong file `index.html`.
+-   Không dùng plugin `style-loader` cùng với `mini-css-extract-plugin`. Nếu đang dùng `style-loader` thì hãy bỏ nó đi, 2 plugin này xung đột với nhau.
+
+**`webpack.config.js`**
+
+```js
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+
+module.exports = {
+    mode: "production",
+    entry: {
+        app: path.resolve("src/index.js"),
+    },
+
+    output: {
+        path: path.resolve(__dirname, "dist"),
+        filename: "[name].js",
+    },
+
+    module: {
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    MiniCssExtractPlugin.loader
+                    "css-loader",
+                ],
+            },
+            {
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,"css-loader", "sass-loader"
+                ],
+            },
+        ],
+    },
+
+    plugins: [
+        new HtmlWebpackPlugin({
+            title: "Webpack App",
+            template: path.resolve(__dirname, "src/index.html"),
+            filename: "index.html",
+            inject: "body", // Chèn script vào cuối body
+        }),
+    ],
+};
+```
