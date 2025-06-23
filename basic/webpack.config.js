@@ -13,6 +13,7 @@ module.exports = {
         path: path.resolve(__dirname, "dist"),
         // filename: "bundle.js",
         filename: "[name].[contenthash].js", // This would allow multiple entry points to be bundled into separate files
+        clean: true, // Clean the output directory before emit
     },
 
     module: {
