@@ -19,6 +19,7 @@ module.exports = (env) => {
             // filename: "bundle.js",
             filename: "[name].[contenthash].js", // This would allow multiple entry points to be bundled into separate files
             clean: true, // Clean the output directory before emit
+            assetModuleFilename: "[file]",
         },
 
         devtool: isDevelopment ? "source-map" : false, // Disable source maps in production for performance, enable in development
@@ -52,6 +53,10 @@ module.exports = (env) => {
                             ],
                         },
                     },
+                },
+                {
+                    test: /\.(png|svg|jpg|jpeg|gif|pdf)$/i,
+                    type: "asset/resource",
                 },
             ],
         },
